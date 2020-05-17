@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -euo pipefail
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
+results=$(mktemp)
+while IFS="" read -r q || [ -n "$q" ]; do
+  googler --json --site imdb.com/list "$(printf '%s' "$q")" | \
+    jq -r '.[]|.url' >>${results}
+done < ${DIR}/queries
+
+sort ${results} | uniq >results
